@@ -1,4 +1,3 @@
-build: off
 build_script:
   - ps: .\build.cmd
 test:
