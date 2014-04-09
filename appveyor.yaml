@@ -1,6 +1,6 @@
 build: off
 build_script:
-  - cmd: .\build.cmd
+  - ps: .\build.cmd
 test:
   assemblies:
     - Akka.FSharp.Tests.dll
