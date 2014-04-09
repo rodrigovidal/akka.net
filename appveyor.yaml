@@ -1,0 +1,8 @@
+build_script:
+  - ps: .\build.cmd build
+test:
+  assemblies:
+    - Akka.FSharp.Tests.dll
+    - Akka.Tests.dll
+    - Akka.Remote.Tests.dll
+    - Akka.TestKit.dll
