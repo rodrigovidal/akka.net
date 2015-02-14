@@ -8,7 +8,7 @@ namespace Akka.Actor.Internal
     /// </summary>
     public class EmptyChildrenContainer : ChildrenContainer
     {
-        private static readonly ImmutableTreeMap<string, ChildStats> _emptyStats = ImmutableTreeMap<string, ChildStats>.Empty;
+        private static readonly ImmutableTreeMap<string, ChildStats> EmptyStats = ImmutableTreeMap<string, ChildStats>.Empty;
         private static readonly ChildrenContainer _instance = new EmptyChildrenContainer();
 
         protected EmptyChildrenContainer()
@@ -20,7 +20,7 @@ namespace Akka.Actor.Internal
 
         public virtual ChildrenContainer Add(string name, ChildRestartStats stats)
         {
-            var newMap = _emptyStats.Add(name, stats);
+            var newMap = EmptyStats.Add(name, stats);
             return NormalChildrenContainer.Create(newMap);
         }
 
@@ -57,7 +57,7 @@ namespace Akka.Actor.Internal
 
         public virtual ChildrenContainer Reserve(string name)
         {
-            return NormalChildrenContainer.Create(_emptyStats.Add(name, ChildNameReserved.Instance));
+            return NormalChildrenContainer.Create(EmptyStats.Add(name, ChildNameReserved.Instance));
         }
 
         public ChildrenContainer Unreserve(string name)
