@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using Akka.Actor.Internal;
 using Akka.Actor.Internals;
 using Akka.Dispatch;
 using Akka.Dispatch.SysMsg;
 using Akka.Serialization;
-using Akka.Util;
 using Akka.Util.Internal;
 
 namespace Akka.Actor
@@ -16,18 +13,17 @@ namespace Akka.Actor
     public partial class ActorCell : IUntypedActorContext, Cell 
     {
         /// <summary>NOTE! Only constructor and ClearActorFields is allowed to update this</summary>
-        private InternalActorRef _self;
+        private readonly InternalActorRef _self;
         public const int UndefinedUid = 0;
         private Props _props;
-        private static readonly Props terminatedProps=new TerminatedProps();
+        private static readonly Props terminatedProps = new TerminatedProps();
 
-        protected Stack<Receive> behaviorStack = new Stack<Receive>();
+        protected Stack<Receive> BehaviorStack = new Stack<Receive>();
         private long _uid;
         private ActorBase _actor;
         private bool _actorHasBeenCleared;
         private Mailbox _mailbox;
         private readonly ActorSystemImpl _systemImpl;
-
 
         public ActorCell(ActorSystemImpl system, InternalActorRef self, Props props, MessageDispatcher dispatcher, InternalActorRef parent)
         {
@@ -142,15 +138,15 @@ namespace Akka.Actor
 
         public void Become(Receive receive, bool discardOld = true)
         {
-            if(discardOld && behaviorStack.Count > 1) //We should never pop off the initial receiver
-                behaviorStack.Pop();
-            behaviorStack.Push(receive);
+            if(discardOld && BehaviorStack.Count > 1) //We should never pop off the initial receiver
+                BehaviorStack.Pop();
+            BehaviorStack.Push(receive);
         }
 
         public void Unbecome()
         {
-            if (behaviorStack.Count > 1) //We should never pop off the initial receiver
-                behaviorStack.Pop();                
+            if (BehaviorStack.Count > 1) //We should never pop off the initial receiver
+                BehaviorStack.Pop();                
         }
   
         void IUntypedActorContext.Become(UntypedReceive receive, bool discardOld)
@@ -171,7 +167,7 @@ namespace Akka.Actor
             //set the thread static context or things will break
             UseThreadContext(() =>
             {
-                behaviorStack = new Stack<Receive>();
+                BehaviorStack = new Stack<Receive>();
                 instance = CreateNewActorInstance();
                 instance.SupervisorStrategyInternal = _props.SupervisorStrategy;
                 //defaults to null - won't affect lazy instantiation unless explicitly set in props
@@ -269,12 +265,12 @@ namespace Akka.Actor
             }
             _actorHasBeenCleared = true;
             CurrentMessage = null;
-            behaviorStack = null;
+            BehaviorStack = null;
         }
 
         protected void PrepareForNewActor()
         {
-            behaviorStack = new Stack<Receive>();
+            BehaviorStack = new Stack<Receive>();
             _actorHasBeenCleared = false;
         }
         protected void SetActorFields(ActorBase actor)
